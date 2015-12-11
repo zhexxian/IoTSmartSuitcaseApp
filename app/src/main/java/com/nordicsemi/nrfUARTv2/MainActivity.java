@@ -218,22 +218,26 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                      public void run() {
                          try {
                          	String text = new String(txValue, "UTF-8");
-                         	String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-                                if (text.charAt(0)=='0')
+                         	//String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                                String[] statuses = text.split(" ");
+                                for (String str:statuses){
+                                    System.out.println(str);
+                                }
+                                if (statuses[0].charAt(0)=='0')
                                     openStt = "The suitcase is well closed.\n";
                                 else
                                     openStt = "The suitcase might have been opened!\n";
-                                if (text.charAt(1)=='0')
+                                if (statuses[0].charAt(1) =='0')
                                     damageStt = "The suitcase has enjoyed a smooth ride so far.\n";
                                 else
                                     damageStt = "The suitcase had a bumpy ride!\n";
-                                if (text.charAt(2)=='0')
+                                if (statuses[0].charAt(2) =='0')
                                     spillageStt = "No spillage was detected.\n";
                                 else
                                     spillageStt = "Some spillage might have occurred inside.\n";
-                                weight = text.substring(3,6)+"\n";
-                                lat = Double.parseDouble(text.substring(6,11));
-                                lng = Double.parseDouble(text.substring(11,16));
+                                weight = statuses[0].substring(3,statuses[0].length())+"\n";
+                                lat = Double.parseDouble(statuses[1]);
+                                lng = Double.parseDouble(statuses[2]);
                         	 	listAdapter.add("Suitcase status:\n"+openStt+damageStt+spillageStt+"\nThe suitcase weighs "
                                 +weight+"kg.\n");
                         	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
