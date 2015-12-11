@@ -60,6 +60,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
@@ -101,10 +102,17 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             finish();
             return;
         }
-        messageListView = (ListView) findViewById(R.id.listMessage);
+
+
+
+        GridView messageListView = (GridView) findViewById(R.id.gridView);
         listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
         messageListView.setAdapter(listAdapter);
-        messageListView.setDivider(null);
+
+//        messageListView = (ListView) findViewById(R.id.listMessage);
+//        listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
+//        messageListView.setAdapter(listAdapter);
+//        messageListView.setDivider(null);
         btnConnectDisconnect=(Button) findViewById(R.id.btn_select);
         service_init();
 
@@ -181,8 +189,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              Log.d(TAG, "UART_CONNECT_MSG");
                              btnConnectDisconnect.setText("Disconnect");
                           ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName()+ " - ready");
-                             listAdapter.add("["+currentDateTimeString+"] Connected to: "+ mDevice.getName());
-                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+                             listAdapter.clear();
+                             listAdapter.add("[" + currentDateTimeString + "] Connected to: " + mDevice.getName());
+                        	 	//messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                              mState = UART_PROFILE_CONNECTED;
                      }
             	 });
@@ -196,6 +205,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              Log.d(TAG, "UART_DISCONNECT_MSG");
                              btnConnectDisconnect.setText("Connect");
                              ((TextView) findViewById(R.id.deviceName)).setText("Not Connected");
+                             listAdapter.clear();
                              listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
                              mState = UART_PROFILE_DISCONNECTED;
                              mService.close();
@@ -238,10 +248,15 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                 weight = statuses[0].substring(3,statuses[0].length())+"\n";
                                 lat = Double.parseDouble(statuses[1]);
                                 lng = Double.parseDouble(statuses[2]);
-                        	 	listAdapter.add("Suitcase status:\n"+openStt+damageStt+spillageStt+"\nThe suitcase weighs "
-                                +weight+"kg.\n");
-                        	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-                        	
+                                listAdapter.clear();
+                        	 	listAdapter.add("Suitcase status:\n"+openStt);
+                                listAdapter.add(damageStt);
+                                listAdapter.add(spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+                        	    listAdapter.add("The suitcase weighs " +weight+"kg.\n");
+
+
+
+
                          } catch (Exception e) {
                              Log.e(TAG, e.toString());
                          }
