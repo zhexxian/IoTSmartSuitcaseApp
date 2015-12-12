@@ -27,6 +27,7 @@ package com.nordicsemi.nrfUARTv2;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -34,6 +35,8 @@ import com.nordicsemi.nrfUARTv2.UartService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -46,6 +49,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -53,10 +57,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.Vibrator;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -86,12 +93,20 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
     private ArrayAdapter<String> listAdapter;
     private Button btnConnectDisconnect;
 
+    //private GridviewAdapter mAdapter;
+    private ArrayList<String> listCountry;
+    private ArrayList<Integer> listFlag;
+
+    private GridView gridView;
+
+
     private String openStt;
     private String spillageStt;
     private String damageStt;
     private String weight;
     double lat;
     double lng;
+    int checkOpen=0;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,12 +124,12 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
         messageListView.setAdapter(listAdapter);
 
-//        messageListView = (ListView) findViewById(R.id.listMessage);
-//        listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
-//        messageListView.setAdapter(listAdapter);
-//        messageListView.setDivider(null);
+
+
+
         btnConnectDisconnect=(Button) findViewById(R.id.btn_select);
         service_init();
+
 
      
        
@@ -147,7 +162,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         });
         // Set initial UI state
     }
-    
+
     //UART service connected/disconnected
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder rawBinder) {
@@ -235,8 +250,27 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                 }
                                 if (statuses[0].charAt(0)=='0')
                                     openStt = "The suitcase is well closed.\n";
-                                else
+                                else {
                                     openStt = "The suitcase might have been opened!\n";
+                                    if (checkOpen == 0){
+                                        NotificationCompat.Builder mBuilder =
+                                                new NotificationCompat.Builder(getApplicationContext())
+                                                        .setSmallIcon(R.drawable.nrfuart_hdpi_icon)
+                                                        .setVisibility(Notification.VISIBILITY_PUBLIC)
+                                                        .setContentTitle("Opened already")
+                                                        .setContentText("shit shit shit");
+                                        // Sets an ID for the notification
+                                        int mNotificationId = 001;
+                                        // Gets an instance of the NotificationManager service
+                                        NotificationManager mNotifyMgr =
+                                                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                        // Builds the notification and issues it.
+                                        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                                        Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                        v.vibrate(500);
+                                        checkOpen += 1;
+                                    }
+                                }
                                 if (statuses[0].charAt(1) =='0')
                                     damageStt = "The suitcase has enjoyed a smooth ride so far.\n";
                                 else
@@ -250,12 +284,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                 lng = Double.parseDouble(statuses[2]);
                                 listAdapter.clear();
                         	 	listAdapter.add("Suitcase status:\n"+openStt);
-                                listAdapter.add(damageStt);
-                                listAdapter.add(spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+                                listAdapter.add("Damage or not: "+damageStt);
+                                listAdapter.add("Spillage or not: "+spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                         	    listAdapter.add("The suitcase weighs " +weight+"kg.\n");
-
-
-
 
                          } catch (Exception e) {
                              Log.e(TAG, e.toString());
@@ -272,6 +303,8 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             
         }
     };
+
+
 
     private void service_init() {
         Intent bindIntent = new Intent(this, UartService.class);
