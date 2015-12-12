@@ -50,6 +50,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.media.Image;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -68,13 +69,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements RadioGroup.OnCheckedChangeListener {
+public class MainActivity extends Activity implements RadioGroup.OnCheckedChangeListener{
     private static final int REQUEST_SELECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
     private static final int UART_PROFILE_READY = 10;
@@ -99,15 +101,17 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
     private GridView gridView;
 
-
-    private String openStt;
-    private String spillageStt;
-    private String damageStt;
-    private String weight;
-    double lat;
-    double lng;
+    private String weight="";
+    int open;
+    int damage;
+    int spillage;
+    String lat="1.3401";
+    String lng="103.9630";
     int checkOpen=0;
-
+    int checkDamage=0;
+    int checkSpillage=0;
+    public final static String EXTRA_LAT = "com.nordicsemi.nrfUARTv2.EXTRA_LAT";
+    public final static String EXTRA_LNG = "com.nordicsemi.nrfUARTv2.EXTRA_LNG";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,6 +149,21 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         //listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
         //messageListView.setAdapter(listAdapter);
 
+        ImageButton showMap = (ImageButton) findViewById(R.id.imageButton);
+        showMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+                    intent.putExtra(EXTRA_LAT, lat);
+                    intent.putExtra(EXTRA_LNG, lng);
+                    startActivity(intent);
+                } catch (NullPointerException ex){
+                    Toast.makeText(getApplicationContext(),"Arduino is not connected.",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
         btnConnectDisconnect = (Button) findViewById(R.id.btn_select);
         service_init();
@@ -190,12 +209,10 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
         listIcon = new ArrayList<Integer>();
 
+        listIcon.add(R.drawable.closed);
+        listIcon.add(R.drawable.damage_ok);
+        listIcon.add(R.drawable.spillage_ok);
         listIcon.add(R.drawable.weight_check);
-        listIcon.add(R.drawable.sample_0);
-        listIcon.add(R.drawable.sample_0);
-        listIcon.add(R.drawable.sample_0);
-        listIcon.add(R.drawable.sample_0);
-
 
     }
 
@@ -284,62 +301,89 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                  runOnUiThread(new Runnable() {
                      public void run() {
                          try {
-                         	String text = new String(txValue, "UTF-8");
+                             String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                             String text = new String(txValue, "UTF-8");
                          	//String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-                                String[] statuses = text.split(" ");
-                                for (String str:statuses){
-                                    System.out.println(str);
-                                }
-                                if (statuses[0].charAt(0)=='0')
-                                    openStt = "The suitcase is well closed.\n";
-                                else {
-                                    openStt = "The suitcase might have been opened!\n";
-                                    if (checkOpen == 0){
-                                        NotificationCompat.Builder mBuilder =
-                                                new NotificationCompat.Builder(getApplicationContext())
-                                                        .setSmallIcon(R.drawable.nrfuart_hdpi_icon)
-                                                        .setVisibility(Notification.VISIBILITY_PUBLIC)
-                                                        .setContentTitle("Opened already")
-                                                        .setContentText("shit shit shit");
+                             String[] statuses = text.split(" ");
+                             listIcon.clear();
+                             if (statuses[0].charAt(0)=='0'){
+                                 open = R.drawable.closed;
+                             } else {
+                                 open = R.drawable.opened;
+                                 if (checkOpen == 0){
+                                     NotificationCompat.Builder mBuilder =
+                                             new NotificationCompat.Builder(getApplicationContext())
+                                                     .setSmallIcon(R.drawable.nrfuart_hdpi_icon)
+                                                     .setVisibility(Notification.VISIBILITY_PUBLIC)
+                                                     .setContentTitle("Opened already")
+                                                     .setContentText("At: "+currentDateTimeString);
                                         // Sets an ID for the notification
-                                        int mNotificationId = 001;
+                                     int mNotificationId = 001;
                                         // Gets an instance of the NotificationManager service
-                                        NotificationManager mNotifyMgr =
-                                                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                     NotificationManager mNotifyMgr =
+                                             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                                         // Builds the notification and issues it.
-                                        mNotifyMgr.notify(mNotificationId, mBuilder.build());
-                                        Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                        v.vibrate(500);
-                                        checkOpen += 1;
-                                    }
-                                }
-                                if (statuses[0].charAt(1) =='0')
-                                    damageStt = "The suitcase has enjoyed a smooth ride so far.\n";
-                                else
-                                    damageStt = "The suitcase had a bumpy ride!\n";
-                                if (statuses[0].charAt(2) =='0')
-                                    spillageStt = "No spillage was detected.\n";
-                                else
-                                    spillageStt = "Some spillage might have occurred inside.\n";
-                                weight = statuses[0].substring(3,statuses[0].length())+"\n";
-                                lat = Double.parseDouble(statuses[1]);
-                                lng = Double.parseDouble(statuses[2]);
+                                     mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                                     Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                     v.vibrate(500);
+                                     checkOpen += 1;
+                                 }
+                             }
+                             if (statuses[0].charAt(1) =='0') {
+                                 damage = R.drawable.damage_ok;
+                             } else {
+                                 damage = R.drawable.damage_notok;
+                                 if (checkDamage == 0) {
+                                     NotificationCompat.Builder mBuilder =
+                                             new NotificationCompat.Builder(getApplicationContext())
+                                                     .setSmallIcon(R.drawable.nrfuart_hdpi_icon)
+                                                     .setVisibility(Notification.VISIBILITY_PUBLIC)
+                                                     .setContentTitle("Damaged already")
+                                                     .setContentText("At: "+currentDateTimeString);
+                                     // Sets an ID for the notification
+                                     int mNotificationId = 001;
+                                     // Gets an instance of the NotificationManager service
+                                     NotificationManager mNotifyMgr =
+                                             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                     // Builds the notification and issues it.
+                                     mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                                     Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                     v.vibrate(500);
+                                     checkDamage += 1;
+                                 }
+                             }
+                             if (statuses[0].charAt(2) =='0') {
+                                 spillage = R.drawable.spillage_ok;
+                             } else {
+                                 spillage = R.drawable.spillage_notok;
+                                 if (checkSpillage == 0) {
+                                     NotificationCompat.Builder mBuilder =
+                                             new NotificationCompat.Builder(getApplicationContext())
+                                                     .setSmallIcon(R.drawable.nrfuart_hdpi_icon)
+                                                     .setVisibility(Notification.VISIBILITY_PUBLIC)
+                                                     .setContentTitle("Damaged already")
+                                                     .setContentText("At: "+currentDateTimeString);
+                                     // Sets an ID for the notification
+                                     int mNotificationId = 001;
+                                     // Gets an instance of the NotificationManager service
+                                     NotificationManager mNotifyMgr =
+                                             (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                                     // Builds the notification and issues it.
+                                     mNotifyMgr.notify(mNotificationId, mBuilder.build());
+                                     Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                     v.vibrate(500);
+                                     checkSpillage += 1;
+                                 }
+                             }
+                             weight = statuses[0].substring(3,statuses[0].length())+"\n";
+                             lat = statuses[1];
+                             lng = statuses[2];
 
-
-//                             listInfo.clear();
-//                             listInfo.add("Suitcase status:\n" + openStt);
-//                             listInfo.add("Damage or not: " + damageStt);
-//                             listInfo.add("Spillage or not: " + spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-//                             listInfo.add("The suitcase weighs " + weight + "kg.\n");
-
-                                listIcon.clear();
-                                listIcon.add(R.drawable.weight_check);
-                                listIcon.add(R.drawable.sample_2);
-                                listIcon.add(R.drawable.sample_3);
-                                listIcon.add(R.drawable.weight_check);
-
+                             listIcon.add(open);
+                             listIcon.add(damage);
+                             listIcon.add(spillage);
+                             listIcon.add(R.drawable.weight_check);
                              gridView.setAdapter(mAdapter);
-
 
                          } catch (Exception e) {
                              Log.e(TAG, e.toString());
@@ -352,12 +396,12 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             	showMessage("Device doesn't support UART. Disconnecting");
             	mService.disconnect();
             }
-            
-            
         }
     };
 
-
+    private void weight(View view){
+        Toast.makeText(this, "Weight is " + weight, Toast.LENGTH_SHORT).show();
+    }
 
     private void service_init() {
         Intent bindIntent = new Intent(this, UartService.class);
@@ -381,7 +425,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
     @Override
     public void onDestroy() {
-    	 super.onDestroy();
+        super.onDestroy();
         Log.d(TAG, "onDestroy()");
         
         try {
