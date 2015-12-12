@@ -90,12 +90,12 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
     private BluetoothDevice mDevice = null;
     private BluetoothAdapter mBtAdapter = null;
     private ListView messageListView;
-    private ArrayAdapter<String> listAdapter;
+    //private ArrayAdapter<String> listAdapter;
     private Button btnConnectDisconnect;
 
-    //private GridviewAdapter mAdapter;
-    private ArrayList<String> listCountry;
-    private ArrayList<Integer> listFlag;
+    private GridviewAdapter mAdapter;
+    private ArrayList<String> listInfo;
+    private ArrayList<Integer> listIcon;
 
     private GridView gridView;
 
@@ -107,10 +107,32 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
     double lat;
     double lng;
     int checkOpen=0;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        prepareList();
+
+
+        // prepared arraylist and passed it to the Adapter class
+        mAdapter = new GridviewAdapter(this, listInfo, listIcon);
+
+        // Set custom adapter to gridview
+        gridView = (GridView) findViewById(R.id.gridView);
+        gridView.setAdapter(mAdapter);
+
+//        // Implement On Item click listener
+//        gridView.setOnItemClickListener(new OnItemClickListener()
+//        {
+//            @Override
+//            public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+//                                    long arg3) {
+//                Toast.makeText(GridViewExampleActivity.this, mAdapter.getItem(position), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBtAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
@@ -119,20 +141,15 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         }
 
 
-
-        GridView messageListView = (GridView) findViewById(R.id.gridView);
-        listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
-        messageListView.setAdapter(listAdapter);
-
+        //GridView messageListView = (GridView) findViewById(R.id.gridView);
+        //listAdapter = new ArrayAdapter<String>(this, R.layout.message_detail);
+        //messageListView.setAdapter(listAdapter);
 
 
-
-        btnConnectDisconnect=(Button) findViewById(R.id.btn_select);
+        btnConnectDisconnect = (Button) findViewById(R.id.btn_select);
         service_init();
 
 
-     
-       
         // Handle Disconnect & Connect button
         btnConnectDisconnect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,27 +158,48 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                     Log.i(TAG, "onClick - BT not enabled yet");
                     Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-                }
-                else {
-                	if (btnConnectDisconnect.getText().equals("Connect")){
-                		
-                		//Connect button pressed, open DeviceListActivity class, with popup windows that scan for devices
-                		
-            			Intent newIntent = new Intent(MainActivity.this, DeviceListActivity.class);
-            			startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
-        			} else {
-        				//Disconnect button pressed
-        				if (mDevice!=null)
-        				{
-        					mService.disconnect();
-        					
-        				}
-        			}
+                } else {
+                    if (btnConnectDisconnect.getText().equals("Connect")) {
+
+                        //Connect button pressed, open DeviceListActivity class, with popup windows that scan for devices
+
+                        Intent newIntent = new Intent(MainActivity.this, DeviceListActivity.class);
+                        startActivityForResult(newIntent, REQUEST_SELECT_DEVICE);
+                    } else {
+                        //Disconnect button pressed
+                        if (mDevice != null) {
+                            mService.disconnect();
+
+                        }
+                    }
                 }
             }
         });
         // Set initial UI state
+
     }
+
+    public void prepareList() {
+        listInfo = new ArrayList<String>();
+
+        listInfo.add("india");
+        listInfo.add("Brazil");
+        listInfo.add("Canada");
+        listInfo.add("China");
+
+
+        listIcon = new ArrayList<Integer>();
+
+        listIcon.add(R.drawable.sample_0);
+        listIcon.add(R.drawable.sample_0);
+        listIcon.add(R.drawable.sample_0);
+        listIcon.add(R.drawable.sample_0);
+        listIcon.add(R.drawable.sample_0);
+
+
+    }
+
+
 
     //UART service connected/disconnected
     private ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -190,6 +228,10 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         }
     };
 
+
+
+
+
     private final BroadcastReceiver UARTStatusChangeReceiver = new BroadcastReceiver() {
 
         public void onReceive(Context context, Intent intent) {
@@ -203,9 +245,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                          	String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
                              Log.d(TAG, "UART_CONNECT_MSG");
                              btnConnectDisconnect.setText("Disconnect");
-                          ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName()+ " - ready");
-                             listAdapter.clear();
-                             listAdapter.add("[" + currentDateTimeString + "] Connected to: " + mDevice.getName());
+                          ((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName() + " - ready");
+                             //listAdapter.clear();
+                             //listAdapter.add("[" + currentDateTimeString + "] Connected to: " + mDevice.getName());
                         	 	//messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
                              mState = UART_PROFILE_CONNECTED;
                      }
@@ -220,8 +262,8 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              Log.d(TAG, "UART_DISCONNECT_MSG");
                              btnConnectDisconnect.setText("Connect");
                              ((TextView) findViewById(R.id.deviceName)).setText("Not Connected");
-                             listAdapter.clear();
-                             listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
+                             //listAdapter.clear();
+                             //listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
                              mState = UART_PROFILE_DISCONNECTED;
                              mService.close();
                             //setUiState();
@@ -282,11 +324,29 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                 weight = statuses[0].substring(3,statuses[0].length())+"\n";
                                 lat = Double.parseDouble(statuses[1]);
                                 lng = Double.parseDouble(statuses[2]);
-                                listAdapter.clear();
-                        	 	listAdapter.add("Suitcase status:\n"+openStt);
-                                listAdapter.add("Damage or not: "+damageStt);
-                                listAdapter.add("Spillage or not: "+spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-                        	    listAdapter.add("The suitcase weighs " +weight+"kg.\n");
+
+
+                             listInfo.clear();
+                             listInfo.add("Suitcase status:\n" + openStt);
+                             listInfo.add("Damage or not: " + damageStt);
+                             listInfo.add("Spillage or not: " + spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+                             listInfo.add("The suitcase weighs " + weight + "kg.\n");
+
+                             listIcon.clear();
+                             listIcon.add(R.drawable.sample_1);
+                             listIcon.add(R.drawable.sample_2);
+                             listIcon.add(R.drawable.sample_3);
+                             listIcon.add(R.drawable.sample_4);
+
+                             gridView.setAdapter(mAdapter);
+
+
+
+//                                listAdapter.clear();
+//                        	 	listAdapter.add("Suitcase status:\n"+openStt);
+//                                listAdapter.add("Damage or not: "+damageStt);
+//                                listAdapter.add("Spillage or not: "+spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+//                        	    listAdapter.add("The suitcase weighs " +weight+"kg.\n");
 
                          } catch (Exception e) {
                              Log.e(TAG, e.toString());
