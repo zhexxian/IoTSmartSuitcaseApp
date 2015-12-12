@@ -61,7 +61,7 @@ public class GridviewAdapter extends BaseAdapter
             view = new ViewHolder();
             convertView = inflator.inflate(R.layout.gridview_row, null);
 
-            view.txtViewTitle = (TextView) convertView.findViewById(R.id.textView1);
+            //view.txtViewTitle = (TextView) convertView.findViewById(R.id.textView1);
             view.imgViewFlag = (ImageView) convertView.findViewById(R.id.imageView1);
 
             convertView.setTag(view);
@@ -71,7 +71,7 @@ public class GridviewAdapter extends BaseAdapter
             view = (ViewHolder) convertView.getTag();
         }
 
-        view.txtViewTitle.setText(listInfo.get(position));
+        //view.txtViewTitle.setText(listInfo.get(position));
         view.imgViewFlag.setImageResource(listIcon.get(position));
 
         return convertView;

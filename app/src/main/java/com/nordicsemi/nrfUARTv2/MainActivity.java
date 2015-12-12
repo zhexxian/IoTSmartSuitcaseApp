@@ -326,11 +326,11 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                 lng = Double.parseDouble(statuses[2]);
 
 
-                             listInfo.clear();
-                             listInfo.add("Suitcase status:\n" + openStt);
-                             listInfo.add("Damage or not: " + damageStt);
-                             listInfo.add("Spillage or not: " + spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-                             listInfo.add("The suitcase weighs " + weight + "kg.\n");
+//                             listInfo.clear();
+//                             listInfo.add("Suitcase status:\n" + openStt);
+//                             listInfo.add("Damage or not: " + damageStt);
+//                             listInfo.add("Spillage or not: " + spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+//                             listInfo.add("The suitcase weighs " + weight + "kg.\n");
 
                              listIcon.clear();
                              listIcon.add(R.drawable.sample_1);
@@ -340,13 +340,6 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
                              gridView.setAdapter(mAdapter);
 
-
-
-//                                listAdapter.clear();
-//                        	 	listAdapter.add("Suitcase status:\n"+openStt);
-//                                listAdapter.add("Damage or not: "+damageStt);
-//                                listAdapter.add("Spillage or not: "+spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-//                        	    listAdapter.add("The suitcase weighs " +weight+"kg.\n");
 
                          } catch (Exception e) {
                              Log.e(TAG, e.toString());

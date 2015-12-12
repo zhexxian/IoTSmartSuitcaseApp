@@ -34,7 +34,7 @@
 
             <GridView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/gridView"
                 android:columnWidth="100dp"
                 android:numColumns="2"
@@ -42,7 +42,9 @@
                 android:verticalSpacing="10dp"
                 android:horizontalSpacing="10dp"
                 android:stretchMode="columnWidth"
-                android:gravity="center" />
+                android:gravity="center"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true" />
 
         </RelativeLayout>
     </LinearLayout>
