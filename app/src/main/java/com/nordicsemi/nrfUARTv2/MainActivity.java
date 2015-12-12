@@ -190,7 +190,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
         listIcon = new ArrayList<Integer>();
 
-        listIcon.add(R.drawable.sample_0);
+        listIcon.add(R.drawable.weight_check);
         listIcon.add(R.drawable.sample_0);
         listIcon.add(R.drawable.sample_0);
         listIcon.add(R.drawable.sample_0);
@@ -332,11 +332,11 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 //                             listInfo.add("Spillage or not: " + spillageStt);                                                                           //messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
 //                             listInfo.add("The suitcase weighs " + weight + "kg.\n");
 
-                             listIcon.clear();
-                             listIcon.add(R.drawable.sample_1);
-                             listIcon.add(R.drawable.sample_2);
-                             listIcon.add(R.drawable.sample_3);
-                             listIcon.add(R.drawable.sample_4);
+                                listIcon.clear();
+                                listIcon.add(R.drawable.weight_check);
+                                listIcon.add(R.drawable.sample_2);
+                                listIcon.add(R.drawable.sample_3);
+                                listIcon.add(R.drawable.weight_check);
 
                              gridView.setAdapter(mAdapter);
 
