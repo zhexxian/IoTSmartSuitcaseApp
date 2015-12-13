@@ -68,7 +68,7 @@
         android:layout_height="58dp"
         android:id="@+id/imageButton"
         android:layout_gravity="center_horizontal"
-        android:background="@mipmap/location_check"
+        android:background="@drawable/location_check"
         />
 
     <RelativeLayout

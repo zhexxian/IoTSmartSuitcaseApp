@@ -210,10 +210,10 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
         listIcon = new ArrayList<Integer>();
 
-        listIcon.add(R.mipmap.closed);
-        listIcon.add(R.mipmap.damage_ok);
-        listIcon.add(R.mipmap.spillage_ok);
-        listIcon.add(R.mipmap.weight_check);
+        listIcon.add(R.drawable.closed);
+        listIcon.add(R.drawable.damage_ok);
+        listIcon.add(R.drawable.spillage_ok);
+        listIcon.add(R.drawable.weight_check);
 
     }
 
@@ -308,9 +308,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              String[] statuses = text.split(" ");
                              listIcon.clear();
                              if (statuses[0].charAt(0)=='0'){
-                                 open = R.mipmap.closed;
+                                 open = R.drawable.closed;
                              } else {
-                                 open = R.mipmap.opened;
+                                 open = R.drawable.opened;
                                  if (checkOpen == 0){
                                      NotificationCompat.Builder mBuilder =
                                              new NotificationCompat.Builder(getApplicationContext())
@@ -331,9 +331,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                  }
                              }
                              if (statuses[0].charAt(1) =='0') {
-                                 damage = R.mipmap.damage_ok;
+                                 damage = R.drawable.damage_ok;
                              } else {
-                                 damage = R.mipmap.damage_notok;
+                                 damage = R.drawable.damage_notok;
                                  if (checkDamage == 0) {
                                      NotificationCompat.Builder mBuilder =
                                              new NotificationCompat.Builder(getApplicationContext())
@@ -354,9 +354,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                  }
                              }
                              if (statuses[0].charAt(2) =='0') {
-                                 spillage = R.mipmap.spillage_ok;
+                                 spillage = R.drawable.spillage_ok;
                              } else {
-                                 spillage = R.mipmap.spillage_notok;
+                                 spillage = R.drawable.spillage_notok;
                                  if (checkSpillage == 0) {
                                      NotificationCompat.Builder mBuilder =
                                              new NotificationCompat.Builder(getApplicationContext())
@@ -383,7 +383,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              listIcon.add(open);
                              listIcon.add(damage);
                              listIcon.add(spillage);
-                             listIcon.add(R.mipmap.weight_check);
+                             listIcon.add(R.drawable.weight_check);
                              gridView.setAdapter(mAdapter);
 
                          } catch (Exception e) {
@@ -400,8 +400,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         }
     };
 
+
     public void weight(View view){
-        Toast.makeText(this, "Weight is " + weight, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Weight is " + weight + " kg.", Toast.LENGTH_SHORT).show();
         final Button  a = (Button) findViewById(R.id.weight);
         a.setOnTouchListener(new View.OnTouchListener() {
             @Override
