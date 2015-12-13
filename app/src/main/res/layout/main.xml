@@ -52,8 +52,8 @@
     </LinearLayout>
 
     <ImageButton
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="360dp"
+        android:layout_height="58dp"
         android:id="@+id/imageButton"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/location_check"/>
