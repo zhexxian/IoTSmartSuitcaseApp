@@ -63,6 +63,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -209,10 +210,10 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
 
         listIcon = new ArrayList<Integer>();
 
-        listIcon.add(R.drawable.closed);
-        listIcon.add(R.drawable.damage_ok);
-        listIcon.add(R.drawable.spillage_ok);
-        listIcon.add(R.drawable.weight_check);
+        listIcon.add(R.mipmap.closed);
+        listIcon.add(R.mipmap.damage_ok);
+        listIcon.add(R.mipmap.spillage_ok);
+        listIcon.add(R.mipmap.weight_check);
 
     }
 
@@ -307,9 +308,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              String[] statuses = text.split(" ");
                              listIcon.clear();
                              if (statuses[0].charAt(0)=='0'){
-                                 open = R.drawable.closed;
+                                 open = R.mipmap.closed;
                              } else {
-                                 open = R.drawable.opened;
+                                 open = R.mipmap.opened;
                                  if (checkOpen == 0){
                                      NotificationCompat.Builder mBuilder =
                                              new NotificationCompat.Builder(getApplicationContext())
@@ -330,9 +331,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                  }
                              }
                              if (statuses[0].charAt(1) =='0') {
-                                 damage = R.drawable.damage_ok;
+                                 damage = R.mipmap.damage_ok;
                              } else {
-                                 damage = R.drawable.damage_notok;
+                                 damage = R.mipmap.damage_notok;
                                  if (checkDamage == 0) {
                                      NotificationCompat.Builder mBuilder =
                                              new NotificationCompat.Builder(getApplicationContext())
@@ -353,9 +354,9 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                  }
                              }
                              if (statuses[0].charAt(2) =='0') {
-                                 spillage = R.drawable.spillage_ok;
+                                 spillage = R.mipmap.spillage_ok;
                              } else {
-                                 spillage = R.drawable.spillage_notok;
+                                 spillage = R.mipmap.spillage_notok;
                                  if (checkSpillage == 0) {
                                      NotificationCompat.Builder mBuilder =
                                              new NotificationCompat.Builder(getApplicationContext())
@@ -382,7 +383,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                              listIcon.add(open);
                              listIcon.add(damage);
                              listIcon.add(spillage);
-                             listIcon.add(R.drawable.weight_check);
+                             listIcon.add(R.mipmap.weight_check);
                              gridView.setAdapter(mAdapter);
 
                          } catch (Exception e) {
@@ -399,8 +400,24 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
         }
     };
 
-    private void weight(View view){
+    public void weight(View view){
         Toast.makeText(this, "Weight is " + weight, Toast.LENGTH_SHORT).show();
+        final Button  a = (Button) findViewById(R.id.weight);
+        a.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    a.setBackgroundColor(0x10000000);
+                    return false;
+                }
+                else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    a.setBackgroundColor(0x00000000);
+                    return false;
+                }
+
+                return false;
+            }
+        });
     }
 
     private void service_init() {

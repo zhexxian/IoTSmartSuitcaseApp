@@ -48,6 +48,18 @@
                 android:layout_alignParentBottom="true"
                 android:nestedScrollingEnabled="true" />
 
+            <Button
+                android:layout_width="180dp"
+                android:layout_height="190dp"
+                android:id="@+id/weight"
+                android:background="#00000000"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="2dp"
+                android:onClick="weight"
+
+                />
+
         </RelativeLayout>
     </LinearLayout>
 
@@ -56,7 +68,8 @@
         android:layout_height="58dp"
         android:id="@+id/imageButton"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/location_check"/>
+        android:background="@mipmap/location_check"
+        />
 
     <RelativeLayout
         android:id="@+id/RelativeLayout"
