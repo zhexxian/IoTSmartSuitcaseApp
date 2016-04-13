@@ -106,8 +106,8 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
     int open;
     int damage;
     int spillage;
-    String lat="1.3401";
-    String lng="103.9630";
+    final String HARDCODED_LAT="1.3401";
+    final String HARDCODED_LNG="103.9630";
     int checkOpen=0;
     int checkDamage=0;
     int checkSpillage=0;
@@ -156,8 +156,8 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                    intent.putExtra(EXTRA_LAT, lat);
-                    intent.putExtra(EXTRA_LNG, lng);
+                    intent.putExtra(EXTRA_LAT, HARDCODED_LAT);
+                    intent.putExtra(EXTRA_LNG, HARDCODED_LNG);
                     startActivity(intent);
                 } catch (NullPointerException ex){
                     Toast.makeText(getApplicationContext(),"Arduino is not connected.",Toast.LENGTH_SHORT).show();
@@ -304,11 +304,13 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                          try {
                              String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
                              String text = new String(txValue, "UTF-8");
-                         	//String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+                             System.out.println(text);
+                             //String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
                              String[] statuses = text.split(" ");
                              listIcon.clear();
                              if (statuses[0].charAt(0)=='0'){
                                  open = R.drawable.closed;
+                                 checkOpen = 0;
                              } else {
                                  open = R.drawable.opened;
                                  if (checkOpen == 0){
@@ -325,13 +327,14 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                              (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                                         // Builds the notification and issues it.
                                      mNotifyMgr.notify(mNotificationId, mBuilder.build());
-                                     Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                     v.vibrate(500);
-                                     checkOpen += 1;
+                                     //Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                     //v.vibrate(500);
+                                     checkOpen = 1;
                                  }
                              }
                              if (statuses[0].charAt(1) =='0') {
                                  damage = R.drawable.damage_ok;
+                                 checkDamage = 0;
                              } else {
                                  damage = R.drawable.damage_notok;
                                  if (checkDamage == 0) {
@@ -348,13 +351,14 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                              (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                                      // Builds the notification and issues it.
                                      mNotifyMgr.notify(mNotificationId, mBuilder.build());
-                                     Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                     v.vibrate(500);
-                                     checkDamage += 1;
+                                     //Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                     //v.vibrate(500);
+                                     checkDamage = 1;
                                  }
                              }
-                             if (statuses[0].charAt(2) =='0') {
+                             if (statuses[0].charAt(2)=='0') {
                                  spillage = R.drawable.spillage_ok;
+                                 checkSpillage = 0;
                              } else {
                                  spillage = R.drawable.spillage_notok;
                                  if (checkSpillage == 0) {
@@ -362,7 +366,7 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                              new NotificationCompat.Builder(getApplicationContext())
                                                      .setSmallIcon(R.drawable.nrfuart_hdpi_icon)
                                                      .setVisibility(Notification.VISIBILITY_PUBLIC)
-                                                     .setContentTitle("Damaged already")
+                                                     .setContentTitle("Spilled already")
                                                      .setContentText("At: "+currentDateTimeString);
                                      // Sets an ID for the notification
                                      int mNotificationId = 001;
@@ -371,14 +375,12 @@ public class MainActivity extends Activity implements RadioGroup.OnCheckedChange
                                              (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                                      // Builds the notification and issues it.
                                      mNotifyMgr.notify(mNotificationId, mBuilder.build());
-                                     Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                                     v.vibrate(500);
-                                     checkSpillage += 1;
+                                     //Vibrator v = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                                     //v.vibrate(500);
+                                     checkSpillage = 1;
                                  }
                              }
                              weight = statuses[0].substring(3,statuses[0].length())+"\n";
-                             lat = statuses[1];
-                             lng = statuses[2];
 
                              listIcon.add(open);
                              listIcon.add(damage);
